@@ -30,6 +30,7 @@ class board:
         self.grid = [[0 for _ in range(self.row)]for _ in range(self.column)]
     
     def setup(self,screen):
+        init_font = pygame.font.SysFont('Comic San MS',50)
         #declare game windows title
         pygame.display.set_caption("Sudoku game")
         #game icon ,attribute to Freepik on flaticon.com
