@@ -30,6 +30,7 @@ class board:
         self.grid = [[0 for _ in range(self.row)]for _ in range(self.column)]
     
     def setup(self,screen):
+        screen.fill(background_color)
         #declare game windows title
         pygame.display.set_caption("Sudoku game")
         #game icon ,attribute to Freepik on flaticon.com
@@ -47,7 +48,7 @@ class board:
         intro_text = ["Please select the difficulty of this game by clicking","button below"]
         intro_font = pygame.font.Font('8-BitMadness.ttf',30)
         introduction = [intro_font.render(line,True,(0,0,0)) for line in intro_text]
-        how_to_play_text = ["How to play:","Click on the box to select","After select input a number to fill it","You can revert and empty the box by inputting 0",
+        how_to_play_text = ["How to play:","Click on the box to select","After select input a number to fill it","You can revert and empty the box by select and input 0",
                             "Press Space when you are finish to check if you are correct"]
         how_to_play = [intro_font.render(line,True,(0,0,0)) for line in how_to_play_text]
         #introduction = intro_font.render("Please select the difficulty of this game\n by clciking button below",True,(0,0,0))
@@ -192,21 +193,27 @@ def main(grid:list):
                     if bo.button_pos(0)[0] <= x <= bo.button_pos(0)[0]+button_width and bo.button_pos(0)[1]<y<bo.button_pos(0)[1]+button_height:
                         difficulty_flag=30
                     elif bo.button_pos(1)[0] <= x <= bo.button_pos(1)[0]+button_width and bo.button_pos(1)[1]<y<bo.button_pos(1)[1]+button_height:
-                        difficulty_flag=45
+                        difficulty_flag=40
                     elif bo.button_pos(2)[0] <= x <= bo.button_pos(2)[0]+button_width and bo.button_pos(2)[1]<y<bo.button_pos(2)[1]+button_height:
-                        difficulty_flag=55
+                        difficulty_flag=50
                     #if player click anywhere else, ignore and skip to next player event
                     else:
                         continue
                     #initialize the grid base on selected difficulty
                     method.fill_grid(grid)
                     ans_grid = [[grid[i][j] for j in range(len(grid[0]))]for i in range(len(grid))]
+                    print(ans_grid)
                     method.remove_cell(difficulty_flag,grid)
                     #create a copy of grid that is used for comparison later
                     copy_grid = [[grid[i][j] for j in range(len(grid[0]))]for i in range(len(grid))]
+                    '''
+                    #debug line
+                    copy_grid = ans_grid
+                    '''
                     screen.fill(background_color)
                     start_time = time.time()
                     #initiate the board and sudoku game
+                    #print("check_point1")
                     bo.draw_board(screen,bo.grid,status,0)
                     pygame.display.update()
         #start           
@@ -226,6 +233,7 @@ def main(grid:list):
                     select = False
             elif status==2 and event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 difficulty_flag = 0
+                status = 0
                 break
             if event.type == pygame.KEYDOWN:
                 if 0<= event.key-48 <=9 and select:
@@ -234,14 +242,9 @@ def main(grid:list):
                     select = False
                 elif event.key == pygame.K_SPACE:
                     if check_win(screen,ans_grid,copy_grid):
-                        difficulty_flag = 0
                         status = 2
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                running = False
-                                break
-                            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                                break                    
+                        grid = [[0 for _ in range(bo.row)]for _ in range(bo.column)] 
+                        print(f"current grid is {grid}") 
                     else:
                         status = 3
                     select = False
@@ -250,10 +253,11 @@ def main(grid:list):
                     #status = 1
                     #de-select
                     select = False
+        if difficulty_flag is not 0:
         #continously draw the updated board
-        bo.draw_board(screen,copy_grid,status,playtime)
-        if select:
-            selected(screen,clicked[1],clicked[0])
+            bo.draw_board(screen,copy_grid,status,playtime)
+            if select:
+                selected(screen,clicked[1],clicked[0])
         pygame.display.update()
 
     #method.fill_grid(grid)
