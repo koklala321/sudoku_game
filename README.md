@@ -1,2 +1,2 @@
 # sudoku_game
-credit to Jovanny Lemonad for Russo One
+credit to Tyler Dunn for 8-bit madness font

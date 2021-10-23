@@ -18,7 +18,7 @@ button_width = 251
 button_xy = (275,450)
 gap = 20
 #set font
-font = pygame.font.SysFont('Comic San MS',80)
+font = pygame.font.Font('8-BitMadness.ttf',65)
 #set resolution
 res = (800,900)
 
@@ -30,7 +30,6 @@ class board:
         self.grid = [[0 for _ in range(self.row)]for _ in range(self.column)]
     
     def setup(self,screen):
-        init_font = pygame.font.SysFont('Comic San MS',50)
         #declare game windows title
         pygame.display.set_caption("Sudoku game")
         #game icon ,attribute to Freepik on flaticon.com
@@ -43,7 +42,21 @@ class board:
         screen.blit(normal,self.button_pos(1))
         hard = pygame.image.load('hard.png')
         screen.blit(hard,self.button_pos(2))
-    
+
+        #Since pygame.render does not support multi -line, we will have to do line break in other way
+        intro_text = ["Please select the difficulty of this game by clicking","button below"]
+        intro_font = pygame.font.Font('8-BitMadness.ttf',30)
+        introduction = [intro_font.render(line,True,(0,0,0)) for line in intro_text]
+        how_to_play_text = ["How to play:","Click on the box to select","After select input a number to fill it","You can revert and empty the box by inputting 0",
+                            "Press Space when you are finish to check if you are correct"]
+        how_to_play = [intro_font.render(line,True,(0,0,0)) for line in how_to_play_text]
+        #introduction = intro_font.render("Please select the difficulty of this game\n by clciking button below",True,(0,0,0))
+        for i,text in enumerate(introduction):
+            screen.blit(text,(35,100+i*30))
+        #added 1 and len(introduction) to add extra line between 2 text
+        for i,text in enumerate(how_to_play):
+            screen.blit(text,(35,100+(i+len(introduction)+1)*30))
+
     def button_pos(self,button_no):
         xy = list(button_xy)
         xy[1] = button_no*(gap+button_height) + button_xy[1]
@@ -78,22 +91,22 @@ class board:
 
         #print status msg
         if status == 1:
-            invalid_font = pygame.font.SysFont('Comic San MS',30)
-            text = invalid_font.render("Wrong number",True,(255,0,0))
+            invalid_font = pygame.font.Font('8-BitMadness.ttf',30)
+            text = invalid_font.render("Invalid number",True,(255,0,0))
             screen.blit(text,(40,820))
         elif status == 2:
-            win_font = pygame.font.SysFont('Comic San MS',40)
-            text = win_font.render("You have solve the puzzle!!! Click anywhere to reinitialize the puzzle",True,(255,0,0))
+            win_font = pygame.font.Font('8-BitMadness.ttf',30)
+            text = win_font.render("You have solve the puzzle!!! Click anywhere to reinitialize the puzzle",True,(0,255,0))
             screen.blit(text,(40,820))
         elif status == 3:
-            win_font = pygame.font.SysFont('Comic San MS',40)
+            win_font = pygame.font.Font('8-BitMadness.ttf',30)
             text = win_font.render("Sorry, your answer is not correct",True,(255,0,0))
             screen.blit(text,(40,820))
 
         #draw time
-        time_font = pygame.font.SysFont('Comic San MS',35)
+        time_font = pygame.font.Font('8-BitMadness.ttf',35)
         timer = time_font.render("Time :"+ format_time(playtime),True,(0,0,0))
-        screen.blit(timer,(600,820))
+        screen.blit(timer,(580,820))
 
 def insert(i,j,grid,copy_grid,key):
     status = 0
@@ -139,7 +152,7 @@ def check_win(screen,ori_grid,player_grid):
 def format_time(seconds:int):
 
     sec = seconds % 60
-    minute = sec//60
+    minute = seconds//60
 
     formatted_time  = f" {minute:02d} : {sec:02d}"
     return formatted_time
@@ -171,6 +184,7 @@ def main(grid:list):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:   
                     running = False
+                    return
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     x,y = pos[0],pos[1]
