@@ -1,13 +1,17 @@
-"""
-
-
-"""
+############################################################
+# A sudoku game made with pygame
+# Made by: Jack Tsai
+# Created/Last updated on : 16/11/2021
+############################################################
 import pygame
 import time
 import method
 
 pygame.init()                                           
 
+####################################################
+# Global Setting ,set here for easy update in future
+####################################################
 
 screen = pygame.display.set_mode
 background_color = (192,192,192)
@@ -17,8 +21,8 @@ button_width = 251
 #mark the first button location
 button_xy = (275,450)
 gap = 20
-#set font
-font = pygame.font.Font('8-BitMadness.ttf',65)
+#default font
+default_font = "Data/8-BitMadness.ttf"
 #set resolution
 res = (800,900)
 
@@ -34,24 +38,23 @@ class board:
         #declare game windows title
         pygame.display.set_caption("Sudoku game")
         #game icon ,attribute to Freepik on flaticon.com
-        icon = pygame.image.load('icon.png')
+        icon = pygame.image.load('Data/icon.png')
         pygame.display.set_icon(icon)
         #set up difficulty button
-        easy = pygame.image.load('easy.png')
+        easy = pygame.image.load('Data/easy.png')
         screen.blit(easy,self.button_pos(0))
-        normal = pygame.image.load('normal.png')
+        normal = pygame.image.load('Data/normal.png')
         screen.blit(normal,self.button_pos(1))
-        hard = pygame.image.load('hard.png')
+        hard = pygame.image.load('Data/hard.png')
         screen.blit(hard,self.button_pos(2))
 
         #Since pygame.render does not support multi -line, we will have to do line break in other way
         intro_text = ["Please select the difficulty of this game by clicking","button below"]
-        intro_font = pygame.font.Font('8-BitMadness.ttf',30)
+        intro_font = pygame.font.Font(default_font,30)
         introduction = [intro_font.render(line,True,(0,0,0)) for line in intro_text]
         how_to_play_text = ["How to play:","Click on the box to select","After select input a number to fill it","You can revert and empty the box by select and input 0",
                             "Press Space when you are finish to check if you are correct"]
         how_to_play = [intro_font.render(line,True,(0,0,0)) for line in how_to_play_text]
-        #introduction = intro_font.render("Please select the difficulty of this game\n by clciking button below",True,(0,0,0))
         for i,text in enumerate(introduction):
             screen.blit(text,(35,100+i*30))
         #added 1 and len(introduction) to add extra line between 2 text
@@ -74,6 +77,7 @@ class board:
         #################################################
         screen.fill(background_color)
         #draw grid
+        number_font = pygame.font.Font(default_font,65)
         for i in range(10):
             if i%3 ==0:
                 pygame.draw.line(screen,(0,0,0),(40+80*i,40),(40+80*i,760),5)
@@ -86,46 +90,45 @@ class board:
         for i in range(self.row):
             for j in range(self.column):
                 if grid[i][j]!=0:
-                    value = font.render(str(grid[i][j]),True,(0,66,200))
+                    value = number_font.render(str(grid[i][j]),True,(0,66,200))
                     #row and col need to be reversed
                     screen.blit(value,(40+80*j+25,40+80*i+20))
 
         #print status msg
-        if status == 1:
-            invalid_font = pygame.font.Font('8-BitMadness.ttf',30)
-            text = invalid_font.render("Invalid number",True,(255,0,0))
-            screen.blit(text,(40,820))
-        elif status == 2:
-            win_font = pygame.font.Font('8-BitMadness.ttf',30)
-            text = win_font.render("You have solve the puzzle!!! Click anywhere to reinitialize the puzzle",True,(0,255,0))
-            screen.blit(text,(40,820))
-        elif status == 3:
-            win_font = pygame.font.Font('8-BitMadness.ttf',30)
-            text = win_font.render("Sorry, your answer is not correct",True,(255,0,0))
-            screen.blit(text,(40,820))
+        if status != 0:
+            msg_font = pygame.font.Font(default_font,30)
+            if status == 1:
+                text = msg_font.render("Invalid number/input",True,(255,0,0))
+                screen.blit(text,(40,820))
+            elif status == 2:
+                text = msg_font.render("You have solved the puzzle!!! Click anywhere to start a new game",True,(0,255,0))
+                screen.blit(text,(40,820))
+            elif status == 3:
+                text = msg_font.render("Sorry, your answer is not correct",True,(255,0,0))
+                screen.blit(text,(40,820))
 
         #draw time
-        time_font = pygame.font.Font('8-BitMadness.ttf',35)
+        time_font = pygame.font.Font(default_font,35)
         timer = time_font.render("Time :"+ format_time(playtime),True,(0,0,0))
         screen.blit(timer,(580,820))
 
-def insert(i,j,grid,copy_grid,key):
-    status = 0
-    #compare to ori_grid, if it is not editable, return
-    if grid[i][j]!=0:
-        return copy_grid,status
-    # erase 
-    if key == 0:
-        copy_grid[i][j] = 0
-        return copy_grid,status
-    #insert/replace with new num
-    if (0 < key <10):
-        if copy_grid[i][j] == key or (method.check_rowcolumn(i,j,copy_grid,key) and method.check_square(i,j,copy_grid,key)):
-            copy_grid[i][j] = key
+    def insert(self,i,j,copy_grid,key):
+        status = 0
+        #compare to ori_grid, if it is not editable, return
+        if self.grid[i][j]!=0:
             return copy_grid,status
-        else:
-            status = 1
+        # erase 
+        if key == 0:
+            copy_grid[i][j] = 0
             return copy_grid,status
+        #insert/replace with new num
+        if (0 < key <10):
+            if copy_grid[i][j] == key or (method.check_rowcolumn(i,j,copy_grid,key) and method.check_square(i,j,copy_grid,key)):
+                copy_grid[i][j] = key
+                return copy_grid,status
+            else:
+                status = 1
+                return copy_grid,status
 
 #this function is to return the coordinate of which box is selected
 def click(pos,screen):   
@@ -143,15 +146,12 @@ def selected(screen,x,y):
     pygame.draw.line(screen,(255,0,0),(40+80*x,40+80*y),(40+80*x,40+80*(y+1)),5)
     pygame.draw.line(screen,(255,0,0),(40+80*(x+1),40+80*y),(40+80*(x+1),40+80*(y+1)),5)
 
-
 def check_win(screen,ori_grid,player_grid):
-    win_font = pygame.font.SysFont('Comic San MS',40)
     if ori_grid == player_grid:
         return True
     return False
 
 def format_time(seconds:int):
-
     sec = seconds % 60
     minute = seconds//60
 
@@ -213,7 +213,6 @@ def main(grid:list):
                     screen.fill(background_color)
                     start_time = time.time()
                     #initiate the board and sudoku game
-                    #print("check_point1")
                     bo.draw_board(screen,bo.grid,status,0)
                     pygame.display.update()
         #start           
@@ -237,7 +236,7 @@ def main(grid:list):
                 break
             if event.type == pygame.KEYDOWN:
                 if 0<= event.key-48 <=9 and select:
-                    copy_grid,status = insert(clicked[0],clicked[1],grid,copy_grid,event.key-48)
+                    copy_grid,status = bo.insert(clicked[0],clicked[1],copy_grid,event.key-48)
                     #deselect once insertion is done            
                     select = False
                 elif event.key == pygame.K_SPACE:
@@ -250,10 +249,10 @@ def main(grid:list):
                     select = False
                 else:
                     #any other keydown should be invalid input
-                    #status = 1
+                    status = 1
                     #de-select
                     select = False
-        if difficulty_flag is not 0:
+        if difficulty_flag != 0:
         #continously draw the updated board
             bo.draw_board(screen,copy_grid,status,playtime)
             if select:
@@ -261,7 +260,6 @@ def main(grid:list):
         pygame.display.update()
 
     #method.fill_grid(grid)
-    #print(f"recompleted \n{grid}")
 
 main(bo.grid)
 
