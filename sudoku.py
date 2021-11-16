@@ -5,7 +5,7 @@
 ############################################################
 import pygame
 import time
-import method
+import Data.Method.method as method
 
 pygame.init()                                           
 
@@ -38,14 +38,14 @@ class board:
         #declare game windows title
         pygame.display.set_caption("Sudoku game")
         #game icon ,attribute to Freepik on flaticon.com
-        icon = pygame.image.load('Data/icon.png')
+        icon = pygame.image.load('Data/Image/icon.png')
         pygame.display.set_icon(icon)
         #set up difficulty button
-        easy = pygame.image.load('Data/easy.png')
+        easy = pygame.image.load('Data/Image/easy.png')
         screen.blit(easy,self.button_pos(0))
-        normal = pygame.image.load('Data/normal.png')
+        normal = pygame.image.load('Data/Image/normal.png')
         screen.blit(normal,self.button_pos(1))
-        hard = pygame.image.load('Data/hard.png')
+        hard = pygame.image.load('Data/Image/hard.png')
         screen.blit(hard,self.button_pos(2))
 
         #Since pygame.render does not support multi -line, we will have to do line break in other way
