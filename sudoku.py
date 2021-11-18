@@ -1,7 +1,7 @@
 ############################################################
 # A sudoku game made with pygame
 # Made by: Jack Tsai
-# Created/Last updated on : 16/11/2021
+# Created/Last updated on : 18/11/2021
 ############################################################
 import pygame
 import time
