@@ -27,12 +27,12 @@ def check_filled(grid:list):
                 return False
     return True
 
-
+'''
 def clear_grid(grid:list):
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             grid[i][j] = 0
-
+'''
 
 
 def check_full_grid(grid:list):
@@ -75,7 +75,7 @@ def fill_grid(grid:list):
     if not emtpy_cell:
         return True
     else:   
-        #mark next empty celxl
+        #mark next empty cell
         i,j = emtpy_cell
     #loop through 1-9
     for value in valid_number:
@@ -83,13 +83,11 @@ def fill_grid(grid:list):
             if check_square(i,j,grid,value):
                 grid[i][j] = value
                 #print(grid[i][j])
-                if check_filled(grid):
+                if fill_grid(grid):
                     return True
-                else:
-                    if fill_grid(grid):
-                        return True
     #print(f"reset one cell, reset location is {i},{j}, original value is {grid[i][j]}")
     grid[i][j]=0
+    return False
 
 
 
@@ -101,7 +99,7 @@ def check_solution(cur_grid:list):
     if not emtpy_cell:
         return True
     else:   
-        #mark next empty celxl
+        #mark next empty cell
         i,j = emtpy_cell
     #loop through 1-9, no need to random num as we are looking for solution only
     for value in range(1,10):
@@ -111,14 +109,11 @@ def check_solution(cur_grid:list):
             if check_square(i,j,cur_grid,value):
                 cur_grid[i][j] = value
                 #print(grid[i][j])
-                if check_filled(cur_grid):
+                if check_solution(cur_grid):
                     #possible solition +=1
                     count+=1
                     #break the current loop, backtrack for another possible solution
                     break
-                else:
-                    if check_solution(cur_grid):
-                        return True
     #reset current grid value to 0, backtrack to previous stack
     cur_grid[i][j]=0
 
